@@ -9,15 +9,15 @@ Time spent: **2** hours spent in total
 The following **required** functionality is completed:
 
 * [x] User can **search for images** by specifying a query and launching a search. Search displays a grid of image results from the Google Image API.
-* [ ] User can click on "settings" which allows selection of **advanced search options** to filter results
-* [ ] User can configure advanced search filters such as:
-  * [ ] Size (small, medium, large, extra-large)
-  * [ ] Color filter (black, blue, brown, gray, green, etc...)
-  * [ ] Type (faces, photo, clip art, line art)
-  * [ ] Site (espn.com)
-* [ ] Subsequent searches have any filters applied to the search results
+* [x] User can click on "settings" which allows selection of **advanced search options** to filter results
+* [x] User can configure advanced search filters such as:
+  * [x] Size (small, medium, large, extra-large)
+  * [x] Color filter (black, blue, brown, gray, green, etc...)
+  * [x] Type (faces, photo, clip art, line art)
+  * [x] Site (espn.com)
+* [x] Subsequent searches have any filters applied to the search results
 * [x] User can tap on any image in results to see the image **full-screen**
-* [x] User can **scroll down to see more images**. The maximum number of images is 64 (limited by API).
+* [] User can **scroll down to see more images**. The maximum number of images is 64 (limited by API).
 
 The following **optional** features are implemented:
 

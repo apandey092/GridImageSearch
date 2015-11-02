@@ -1,6 +1,7 @@
 package com.example.apandey.gridimagesearch.adapters;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-/**
- * Created by apandey on 10/29/15.
- */
 public class ImageResultsAdapter extends ArrayAdapter<ImageResult> {
     public ImageResultsAdapter(Context context,  List<ImageResult> images) {
-        super(context, android.R.layout.simple_list_item_1, images);
+        super(context, R.layout.item_image_result, images);
     }
 
     @Override
@@ -33,7 +31,7 @@ public class ImageResultsAdapter extends ArrayAdapter<ImageResult> {
         TextView txtView = (TextView)convertView.findViewById(R.id.tvTitle);
 
         imageView.setImageResource(0);
-        txtView.setText(imageResult.title);
+        txtView.setText(Html.fromHtml(imageResult.title));
         Picasso.with(getContext()).load(imageResult.thumbUrl).into(imageView);
         return convertView;
     }

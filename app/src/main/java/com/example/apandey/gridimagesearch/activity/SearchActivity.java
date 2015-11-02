@@ -13,6 +13,7 @@ import android.widget.GridView;
 
 import com.example.apandey.gridimagesearch.R;
 import com.example.apandey.gridimagesearch.adapters.ImageResultsAdapter;
+import com.example.apandey.gridimagesearch.models.FilterQuery;
 import com.example.apandey.gridimagesearch.models.ImageResult;
 import com.example.apandey.gridimagesearch.utils.EndlessScrollListener;
 import com.loopj.android.http.AsyncHttpClient;
@@ -28,11 +29,10 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
     public static int REQUEST_CODE = 10;
-    private String size;
-    private String type;
-    private String color;
-    private String siteFilter;
     private int start = 0;
+    private String searchKey;
+    private String GOOGLE_IMAGE_ENDPOINT = "https://ajax.googleapis.com/ajax/services/search/images";
+    private FilterQuery filterQuery;
 
     EditText etQuery;
     //    Button btSearch;
@@ -44,19 +44,17 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-
         setUpViews();
+        filterQuery = new FilterQuery();
+        imageResults = new ArrayList<>();
+        aImageResults = new ImageResultsAdapter(this, imageResults);
+        gvResults.setAdapter(aImageResults);
 
     }
 
     private void setUpViews() {
         etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
-        imageResults = new ArrayList<>();
-        aImageResults = new ImageResultsAdapter(this, imageResults);
-        gvResults.setAdapter(aImageResults);
-
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -66,16 +64,13 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        gvResults.setOnScrollListener(new EndlessScrollListener(8) {
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
-                loadMore(page);
+                loadMore(searchKey, page-1);
                 return true;
             }
         });
-
-
-
     }
 
     public void onComposeAction(MenuItem mi) {
@@ -86,14 +81,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
-//            i.putExtra("size", imageSize);
-//            i.putExtra("type", imageType);
-//            i.putExtra("color", imageColor);
-//            i.putExtra("sitefilter", siteFilter);
-            size = data.getStringExtra("size");
-            type = data.getStringExtra("type");
-            color = data.getStringExtra("color");
-            siteFilter = data.getStringExtra("sitefilter");
+            filterQuery = FilterQuery.fromData(data);
         }
     }
 
@@ -120,26 +108,14 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void onImageSearch(View v) {
-       loadMore(0);
+        String query = etQuery.getText().toString();
+        searchKey = query;
+        loadMore(searchKey, 0);
     }
 
-    private void loadMore(int start){
-        String query = etQuery.getText().toString();
-//        Toast.makeText(this, "Search for "+query, Toast.LENGTH_SHORT).show();
-        String searchUrl = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + query + "&rsz=8&start="+start;
-//        https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=fb&rsz=8&imgc=blue&imgsz=icon&imgtype=face&as_sitesearch=facebook.com
-        if(size != null && !size.isEmpty()){
-            searchUrl += "&imgsz="+size;
-        }
-        if(type != null && !type.isEmpty()){
-            searchUrl += "&imgtype="+type;
-        }
-        if(siteFilter != null && !siteFilter.isEmpty()){
-            searchUrl += "&as_sitesearch="+siteFilter;
-        }
-        if(color != null && !color.isEmpty()){
-            searchUrl += "&imgc="+color;
-        }
+    private void loadMore(String query , int start){
+        String searchUrl = GOOGLE_IMAGE_ENDPOINT + "?v=1.0&q=" + query + "&rsz=8&start="+start;
+        searchUrl = getSearchUrlWithFilters(searchUrl);
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(searchUrl, new JsonHttpResponseHandler() {
             @Override
@@ -147,9 +123,7 @@ public class SearchActivity extends AppCompatActivity {
                 Log.d("DEBUG", response.toString());
                 try {
                     JSONArray imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
-                    imageResults.clear();
                     aImageResults.addAll(ImageResult.fromJsonArray(imageResultsJson));
-//                    aImageResults.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -161,5 +135,21 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private String getSearchUrlWithFilters(String searchUrl) {
+        if(filterQuery.size != null && !filterQuery.size.isEmpty()){
+            searchUrl += "&imgsz="+filterQuery.size;
+        }
+        if(filterQuery.type != null && !filterQuery.type.isEmpty()){
+            searchUrl += "&imgtype="+filterQuery.type;
+        }
+        if(filterQuery.siteFilter != null && !filterQuery.siteFilter.isEmpty()){
+            searchUrl += "&as_sitesearch="+filterQuery.siteFilter;
+        }
+        if(filterQuery.color != null && !filterQuery.color.isEmpty()){
+            searchUrl += "&imgc="+filterQuery.color;
+        }
+        return searchUrl;
     }
 }
