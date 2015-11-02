@@ -1,6 +1,9 @@
 package com.example.apandey.gridimagesearch.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.example.apandey.gridimagesearch.R;
 import com.example.apandey.gridimagesearch.adapters.ImageResultsAdapter;
@@ -67,7 +71,7 @@ public class SearchActivity extends AppCompatActivity {
         gvResults.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
-                loadMore(searchKey, page-1);
+                loadMore(searchKey, page - 1);
                 return true;
             }
         });
@@ -114,27 +118,33 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void loadMore(String query , int start){
-        String searchUrl = GOOGLE_IMAGE_ENDPOINT + "?v=1.0&q=" + query + "&rsz=8&start="+start;
-        searchUrl = getSearchUrlWithFilters(searchUrl);
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(searchUrl, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
-                try {
-                    JSONArray imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
-                    aImageResults.addAll(ImageResult.fromJsonArray(imageResultsJson));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if(!isNetworkAvailable()){
+            Log.d("ERROR", "Please make sure internet is working");
+            Toast.makeText(this, "check internet settings", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            String searchUrl = GOOGLE_IMAGE_ENDPOINT + "?v=1.0&q=" + query + "&rsz=8&start=" + start;
+            searchUrl = getSearchUrlWithFilters(searchUrl);
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(searchUrl, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Log.d("DEBUG", response.toString());
+                    try {
+                        JSONArray imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
+                        aImageResults.addAll(ImageResult.fromJsonArray(imageResultsJson));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("INFO", imageResults.toString());
                 }
-                Log.d("INFO", imageResults.toString());
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     private String getSearchUrlWithFilters(String searchUrl) {
@@ -151,5 +161,12 @@ public class SearchActivity extends AppCompatActivity {
             searchUrl += "&imgc="+filterQuery.color;
         }
         return searchUrl;
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 }
