@@ -5,15 +5,15 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.example.apandey.gridimagesearch.R;
 import com.example.apandey.gridimagesearch.adapters.ImageResultsAdapter;
@@ -38,8 +38,6 @@ public class SearchActivity extends AppCompatActivity {
     private String GOOGLE_IMAGE_ENDPOINT = "https://ajax.googleapis.com/ajax/services/search/images";
     private FilterQuery filterQuery;
 
-    EditText etQuery;
-    //    Button btSearch;
     GridView gvResults;
     ArrayList<ImageResult> imageResults;
     private ImageResultsAdapter aImageResults;
@@ -57,7 +55,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setUpViews() {
-        etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -93,6 +90,25 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchKey = query;
+                aImageResults.clear();
+                // perform query here
+                fetchImages(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                fetchImages(newText);
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -111,18 +127,16 @@ public class SearchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onImageSearch(View v) {
-        String query = etQuery.getText().toString();
-        searchKey = query;
-        loadMore(searchKey, 0);
+    private void fetchImages(String query){
+        loadMore(query, 0);
     }
 
     private void loadMore(String query , int start){
-        if(!isNetworkAvailable()){
-            Log.d("ERROR", "Please make sure internet is working");
-            Toast.makeText(this, "check internet settings", Toast.LENGTH_SHORT).show();
-        }
-        else {
+//        if(!isNetworkAvailable()){
+//            Log.d("ERROR", "Please make sure internet is working");
+//            Toast.makeText(this, "check internet settings", Toast.LENGTH_SHORT).show();
+//        }
+//        else {
             String searchUrl = GOOGLE_IMAGE_ENDPOINT + "?v=1.0&q=" + query + "&rsz=8&start=" + start;
             searchUrl = getSearchUrlWithFilters(searchUrl);
             AsyncHttpClient client = new AsyncHttpClient();
@@ -144,7 +158,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 }
             });
-        }
+//        }
     }
 
     private String getSearchUrlWithFilters(String searchUrl) {

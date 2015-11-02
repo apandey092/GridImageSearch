@@ -5,4 +5,11 @@
         android:onClick="onComposeAction"
         android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <!-- res/menu/menu.xml -->
+        <item android:id="@+id/action_search"
+            android:orderInCategory="5"
+            android:title="Search"
+            android:icon="@android:drawable/ic_menu_search"
+            app:showAsAction="ifRoom|collapseActionView"
+            app:actionViewClass="android.support.v7.widget.SearchView" />
 </menu>
