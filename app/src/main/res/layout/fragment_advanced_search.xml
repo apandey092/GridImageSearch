@@ -12,7 +12,8 @@
         android:id="@+id/txtAdv"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:gravity="center_vertical"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -22,7 +23,8 @@
         android:id="@+id/txtImageSize"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/evImgSize" />
+        android:layout_alignBottom="@+id/evImgSize"
+        android:gravity="center_vertical"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -31,7 +33,8 @@
         android:layout_toRightOf="@+id/txtImageSize"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/txtAdv" />
+        android:layout_below="@+id/txtAdv"
+       />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,7 +45,7 @@
         android:layout_alignBottom="@+id/evClrFilter"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:width="100dp" />
+        android:gravity="center_vertical" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -52,7 +55,8 @@
         android:layout_alignStart="@+id/evImgSize"
         android:layout_alignRight="@+id/evImgSize"
         android:layout_alignEnd="@+id/evImgSize"
-        android:layout_below="@+id/evImgSize" />
+        android:layout_below="@+id/evImgSize"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -63,7 +67,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignBottom="@+id/evImageType"
-        android:width="100dp" />
+        android:gravity="center_vertical"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -73,7 +77,8 @@
         android:layout_alignRight="@+id/evClrFilter"
         android:layout_alignEnd="@+id/evClrFilter"
         android:layout_toRightOf="@+id/txtImageType"
-        android:layout_toEndOf="@+id/txtImageType" />
+        android:layout_toEndOf="@+id/txtImageType"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -83,7 +88,8 @@
         android:id="@+id/txtSiteFilter"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/evSiteFilter" />
+        android:layout_alignBottom="@+id/evSiteFilter"
+        android:gravity="center_vertical"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -93,16 +99,29 @@
         android:layout_alignRight="@+id/evImageType"
         android:layout_alignEnd="@+id/evImageType"
         android:layout_toRightOf="@+id/txtSiteFilter"
-        android:layout_toEndOf="@+id/txtSiteFilter" />
+        android:layout_toEndOf="@+id/txtSiteFilter"
+        />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:id="@+id/bvSave"
-        android:onClick="onSave"
-        android:layout_marginTop="68dp"
+        android:text="@string/save"
+        android:id="@+id/btnSave"
+        android:layout_alignLeft="@+id/txtColor"
+        android:layout_alignStart="@+id/txtColor"
         android:layout_below="@+id/txtSiteFilter"
-        android:layout_centerHorizontal="true" />
+        android:layout_toLeftOf="@+id/btnCancel"
+        android:layout_toStartOf="@+id/btnCancel" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        android:id="@+id/btnCancel"
+        android:layout_alignTop="@+id/btnSave"
+        android:layout_alignRight="@+id/evSiteFilter"
+        android:layout_alignEnd="@+id/evSiteFilter"
+        android:layout_toRightOf="@+id/txtAdv"
+        android:layout_toEndOf="@+id/txtAdv" />
 
 </RelativeLayout>

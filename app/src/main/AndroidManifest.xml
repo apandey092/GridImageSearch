@@ -22,13 +22,10 @@
             android:name=".activity.ImageDisplayActivity"
             android:label="@string/title_activity_image_display" >
         </activity>
-        <activity
-            android:name=".activity.AdvanceOptionsActivity"
-            android:label="@string/title_activity_advance_options" >
-        </activity>
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
 
 </manifest>

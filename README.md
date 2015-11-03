@@ -2,7 +2,7 @@
 
 Grid Image Search is an android app that allows a user to search for images on web using simple filters. The app utilizes [Google Image Search API](https://developers.google.com/image-search/). Please note that API has been officially deprecated as of May 26, 2011.
 
-Time spent: **2** hours spent in total
+Time spent: **12** hours spent in total
 
 ## User Stories
 
@@ -23,8 +23,8 @@ The following **optional** features are implemented:
 
 * [ ] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
 * [x] Used the **ActionBar SearchView** or custom layout as the query box instead of an EditText
-* [ ] User can **share an image** to their friends or email it to themselves
-* [ ] Replaced Filter Settings Activity with a lightweight modal overlay
+* [x] User can **share an image** to their friends or email it to themselves
+* [x] Replaced Filter Settings Activity with a lightweight modal overlay
 * [ ] Improved the user interface and experiment with image assets and/or styling and coloring
 
 The following **bonus** features are implemented:
@@ -40,7 +40,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/apandey092/GridImageSearch/blob/master/GoogleImageSearch.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 

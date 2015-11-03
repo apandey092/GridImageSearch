@@ -1,10 +1,8 @@
 package com.example.apandey.gridimagesearch.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -17,6 +15,7 @@ import android.widget.GridView;
 
 import com.example.apandey.gridimagesearch.R;
 import com.example.apandey.gridimagesearch.adapters.ImageResultsAdapter;
+import com.example.apandey.gridimagesearch.dialog.AdvanceSearchDialog;
 import com.example.apandey.gridimagesearch.models.FilterQuery;
 import com.example.apandey.gridimagesearch.models.ImageResult;
 import com.example.apandey.gridimagesearch.utils.EndlessScrollListener;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements AdvanceSearchDialog.DismissDialogListener {
     public static int REQUEST_CODE = 10;
     private int start = 0;
     private String searchKey;
@@ -74,14 +73,15 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void onComposeAction(MenuItem mi) {
-        Intent i = new Intent(this, AdvanceOptionsActivity.class);
-        startActivityForResult(i, REQUEST_CODE);
+    public void onComposeAction() {
+        FragmentManager fm = getSupportFragmentManager();
+        AdvanceSearchDialog settingsFragmentDialog = AdvanceSearchDialog.newInstance(filterQuery);
+        settingsFragmentDialog.show(fm, "fragment_advanced_search");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             filterQuery = FilterQuery.fromData(data);
         }
     }
@@ -104,7 +104,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                fetchImages(newText);
+//                fetchImages(newText);
                 return false;
             }
         });
@@ -121,66 +121,60 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            onComposeAction();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void fetchImages(String query){
+    private void fetchImages(String query) {
         loadMore(query, 0);
     }
 
-    private void loadMore(String query , int start){
-//        if(!isNetworkAvailable()){
-//            Log.d("ERROR", "Please make sure internet is working");
-//            Toast.makeText(this, "check internet settings", Toast.LENGTH_SHORT).show();
-//        }
-//        else {
-            String searchUrl = GOOGLE_IMAGE_ENDPOINT + "?v=1.0&q=" + query + "&rsz=8&start=" + start;
-            searchUrl = getSearchUrlWithFilters(searchUrl);
-            AsyncHttpClient client = new AsyncHttpClient();
-            client.get(searchUrl, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d("DEBUG", response.toString());
-                    try {
-                        JSONArray imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
-                        aImageResults.addAll(ImageResult.fromJsonArray(imageResultsJson));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("INFO", imageResults.toString());
-                }
+    private void loadMore(String query, int start) {
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+        String searchUrl = GOOGLE_IMAGE_ENDPOINT + "?v=1.0&q=" + query + "&rsz=8&start=" + start;
+        searchUrl = getSearchUrlWithFilters(searchUrl);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(searchUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
+                try {
+                    JSONArray imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
+                    aImageResults.addAll(ImageResult.fromJsonArray(imageResultsJson));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            });
-//        }
+                Log.d("INFO", imageResults.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 
     private String getSearchUrlWithFilters(String searchUrl) {
-        if(filterQuery.size != null && !filterQuery.size.isEmpty()){
-            searchUrl += "&imgsz="+filterQuery.size;
+        if (filterQuery.size != null && !filterQuery.size.isEmpty()) {
+            searchUrl += "&imgsz=" + filterQuery.size;
         }
-        if(filterQuery.type != null && !filterQuery.type.isEmpty()){
-            searchUrl += "&imgtype="+filterQuery.type;
+        if (filterQuery.type != null && !filterQuery.type.isEmpty()) {
+            searchUrl += "&imgtype=" + filterQuery.type;
         }
-        if(filterQuery.siteFilter != null && !filterQuery.siteFilter.isEmpty()){
-            searchUrl += "&as_sitesearch="+filterQuery.siteFilter;
+        if (filterQuery.siteFilter != null && !filterQuery.siteFilter.isEmpty()) {
+            searchUrl += "&as_sitesearch=" + filterQuery.siteFilter;
         }
-        if(filterQuery.color != null && !filterQuery.color.isEmpty()){
-            searchUrl += "&imgc="+filterQuery.color;
+        if (filterQuery.color != null && !filterQuery.color.isEmpty()) {
+            searchUrl += "&imgc=" + filterQuery.color;
         }
         return searchUrl;
     }
 
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+
+    @Override
+    public void onFinishSettingDialog(FilterQuery query) {
+        this.filterQuery = query;
     }
 }
